@@ -13,3 +13,25 @@ datasource db {
   url      = env("DATABASE_URL")
   directUrl = env("DIRECT_URL")
 }
+
+
+model User {
+    id Int @id @default(autoincrement())
+    email String @unique
+    password String? // it will be null if the user signed up using OAuth
+    provider String? // eg'google', 'github'
+    providerId String?
+    firstName String?
+    lastName String?
+    username String @unique
+    bio String?
+    profileImage String?
+    isVerified Boolean @default(false)
+    verificationToken String?
+    verificationTokenExpires DateTime?
+    resetPasswordToken String?
+    resetPasswordTokenExpires DateTime?
+    lastLogin DateTime?
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
+}

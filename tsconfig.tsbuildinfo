@@ -1,1 +1,1 @@
-{"root":["./src/index.ts","./src/middlewares/error.middleware.ts","./src/utils/errors.ts"],"version":"5.9.2"}
+{"root":["./src/index.ts","./src/controllers/auth.controller.ts","./src/middlewares/error.middleware.ts","./src/routes/v1/api.routes.ts","./src/routes/v1/auth.routes.ts","./src/routes/v1/index.ts","./src/routes/v1/logs.routes.ts","./src/routes/v1/user.routes.ts","./src/sendgrid/config.ts","./src/sendgrid/emails.ts","./src/utils/errors.ts"],"errors":true,"version":"5.9.2"}

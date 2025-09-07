@@ -7,7 +7,9 @@
   //   "nodejs_compat"
   // ],
   "vars": {
-    "DIRECT_URL": "postgresql://neondb_owner:****************@ep-icy-forest-ad4o9ror-pooler.c-2.us-east-1.aws.neon.tech/neondb?sslmode=require&channel_binding=require"
+    "DIRECT_URL": "postgresql://neondb_owner:npg_q3jHKnAdoXb8@ep-icy-forest-ad4o9ror-pooler.c-2.us-east-1.aws.neon.tech/neondb?sslmode=require&channel_binding=require",
+    "EMAIL_FROM": "noreply.authservice.bot@gmail.com",
+    "SENDGRID_API_KEY": "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"
   },
   // "kv_namespaces": [
   //   {
