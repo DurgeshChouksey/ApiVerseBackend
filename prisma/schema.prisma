@@ -17,7 +17,7 @@ datasource db {
 
 model User {
     id Int @id @default(autoincrement())
-    email String @unique
+    email String? @unique
     password String? // it will be null if the user signed up using OAuth
     provider String? // eg'google', 'github'
     providerId String?

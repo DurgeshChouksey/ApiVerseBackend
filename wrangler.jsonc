@@ -7,9 +7,11 @@
   //   "nodejs_compat"
   // ],
   "vars": {
+    "DATABASE_URL":"prisma://accelerate.prisma-data.net/?api_key=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJqd3RfaWQiOjEsInNlY3VyZV9rZXkiOiJza19BUjYyVlJ6aGF2aVBiREx3aU1iSm8iLCJhcGlfa2V5IjoiMDFLNEREV0JDSEg1MVNSWlNYMEVHTjg0WFMiLCJ0ZW5hbnRfaWQiOiJkYmJiNDAyMWU3ZmQ3YTA2MGIxNjlmN2Q3ZjgxY2JhMTQwMTQwMzMyODZkMmIzYTRjM2QzMTBiZGYwNmJkMDcwIiwiaW50ZXJuYWxfc2VjcmV0IjoiNzYzN2QzOGMtZmIwOC00ODFlLTg0MDQtMTEwMTQ5MTIxZjRmIn0.z6k80stKA-AO8Krr3Mmzkwke9FIDxMBm4EFKFGmkBvE",
     "DIRECT_URL": "postgresql://neondb_owner:npg_q3jHKnAdoXb8@ep-icy-forest-ad4o9ror-pooler.c-2.us-east-1.aws.neon.tech/neondb?sslmode=require&channel_binding=require",
     "EMAIL_FROM": "noreply.authservice.bot@gmail.com",
-    "SENDGRID_API_KEY": "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"
+    "SENDGRID_API_KEY": "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",
+    "JWT_SECRET": "myjsonwebtoken"
   },
   // "kv_namespaces": [
   //   {

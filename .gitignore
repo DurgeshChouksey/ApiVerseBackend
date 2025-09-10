@@ -42,3 +42,10 @@ wrangler.jsonc
 # pnpm-lock.yaml
 *.tmp
 *.swp
+
+# Build output
+dist/
+build/
+*.js
+*.js.map
+*.d.ts
