@@ -11,7 +11,9 @@
     "DIRECT_URL": "postgresql://neondb_owner:npg_q3jHKnAdoXb8@ep-icy-forest-ad4o9ror-pooler.c-2.us-east-1.aws.neon.tech/neondb?sslmode=require&channel_binding=require",
     "EMAIL_FROM": "noreply.authservice.bot@gmail.com",
     "SENDGRID_API_KEY": "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",
-    "JWT_SECRET": "myjsonwebtoken"
+    "JWT_SECRET": "myjsonwebtoken",
+    "GOOGLE_CLIENT_ID":"457613775380-u6ed6uaepfqull7lvmn0rknfijm9ddqg.apps.googleusercontent.com",
+    "GOOGLE_CLIENT_SECRET":"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",
   },
   // "kv_namespaces": [
   //   {

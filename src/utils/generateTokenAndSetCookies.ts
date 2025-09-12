@@ -24,8 +24,10 @@ export const generateTokenAndSetCookies = async (
     setCookie(c, 'token', token, {
         path: '/',
         httpOnly: true,
-        secure: Boolean(c.env.NODE_ENV === 'production'),
+        secure: true,
         sameSite: 'Lax', // optional, recommended
         maxAge: 60 * 60, // 1 hour
     });
+
+    return token;
 };

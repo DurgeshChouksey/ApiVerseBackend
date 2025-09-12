@@ -2,7 +2,6 @@ import { Context } from "hono"
 import { sendResetPasswordLinkEmail, sendResetPasswordSuccessEmail, sendVerificationEmail, sendWelcomeEmail } from "../sendgrid/emails";
 import z from "zod";
 import bcrypt from 'bcryptjs';
-import crypto from 'crypto';
 import { getPrisma } from "../prisma.setup/client";
 import { BadRequestError } from "../utils/errors";
 import { generateTokenAndSetCookies } from "../utils/generateTokenAndSetCookies";
@@ -49,6 +48,7 @@ export const signup = async(c:Context) => {
     const user = await prisma.user.create({
         data: {
             ...signupInputs,
+            lastLogin: new Date()
         },
         select: {
             id: true,

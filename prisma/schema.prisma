@@ -31,7 +31,10 @@ model User {
     verificationTokenExpires DateTime?
     resetPasswordToken String?
     resetPasswordTokenExpires DateTime?
+    needsUsernameUpdate Boolean @default(false) // for the first time, giving a temp username in oauth
     lastLogin DateTime?
     createdAt DateTime @default(now())
     updatedAt DateTime @updatedAt
+
+    @@unique([providerId, provider])
 }

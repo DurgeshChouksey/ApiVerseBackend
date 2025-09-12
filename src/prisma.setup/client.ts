@@ -15,7 +15,7 @@ export function getPrisma(c: any) {
     globalThis.prisma = new PrismaClient({
         datasources: {
             db: {
-            url: "prisma://accelerate.prisma-data.net/?api_key=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJqd3RfaWQiOjEsInNlY3VyZV9rZXkiOiJza19BUjYyVlJ6aGF2aVBiREx3aU1iSm8iLCJhcGlfa2V5IjoiMDFLNEREV0JDSEg1MVNSWlNYMEVHTjg0WFMiLCJ0ZW5hbnRfaWQiOiJkYmJiNDAyMWU3ZmQ3YTA2MGIxNjlmN2Q3ZjgxY2JhMTQwMTQwMzMyODZkMmIzYTRjM2QzMTBiZGYwNmJkMDcwIiwiaW50ZXJuYWxfc2VjcmV0IjoiNzYzN2QzOGMtZmIwOC00ODFlLTg0MDQtMTEwMTQ5MTIxZjRmIn0.z6k80stKA-AO8Krr3Mmzkwke9FIDxMBm4EFKFGmkBvE"
+            url: c.env.DATABASE_URL,
             }
         }
     }).$extends(withAccelerate());
