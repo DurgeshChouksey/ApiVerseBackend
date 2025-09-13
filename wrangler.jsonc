@@ -12,6 +12,7 @@
     "EMAIL_FROM": "noreply.authservice.bot@gmail.com",
     "SENDGRID_API_KEY": "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",
     "JWT_SECRET": "myjsonwebtoken",
+    "JWT_REFRESH_SECRET":"myjsonrefreshwebtoken",
     "GOOGLE_CLIENT_ID":"457613775380-u6ed6uaepfqull7lvmn0rknfijm9ddqg.apps.googleusercontent.com",
     "GOOGLE_CLIENT_SECRET":"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",
   },

@@ -2,10 +2,7 @@ import { Context } from "hono";
 import { SignJWT } from 'jose';
 import { setCookie } from 'hono/cookie';
 
-export const generateTokenAndSetCookies = async (
-  c: Context,
-  user: { id: number; username: string; email?: string | null }
-) => {
+export const generateTokenAndSetCookies = async ( c: Context, user: { id: number; username: string; email?: string | null }) => {
   const payload: { id: number; username: string; email?: string | null } = {
     id: user.id,
     username: user.username,
@@ -15,19 +12,32 @@ export const generateTokenAndSetCookies = async (
     payload.email = user.email;
   }
 
-  const token = await new SignJWT(payload)
+  const accessToken = await new SignJWT(payload)
     .setProtectedHeader({ alg: 'HS256' })
     .setExpirationTime('1h')
     .sign(new TextEncoder().encode(c.env.JWT_SECRET));
 
+  const refreshToken = await new SignJWT(payload)
+    .setProtectedHeader({ alg: 'HS256' })
+    .setExpirationTime('7d')
+    .sign(new TextEncoder().encode(c.env.JWT_REFRESH_SECRET));
 
-    setCookie(c, 'token', token, {
+
+
+    setCookie(c, 'accessToken', accessToken, {
         path: '/',
         httpOnly: true,
         secure: true,
         sameSite: 'Lax', // optional, recommended
-        maxAge: 60 * 60, // 1 hour
+        maxAge: 1*60*60, // 1 hour
     });
 
-    return token;
+    setCookie(c, 'refreshToken', refreshToken, {
+        path: '/api/v1/auth/refresh-token',
+        httpOnly: true,
+        secure: true,
+        sameSite: 'Lax', // optional, recommended
+        maxAge: 7 * 24 * 60 * 60, // 7 hour
+    });
+
 };

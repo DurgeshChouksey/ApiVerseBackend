@@ -16,7 +16,7 @@ datasource db {
 
 
 model User {
-    id Int @id @default(autoincrement())
+    id String @id @default(cuid())
     email String? @unique
     password String? // it will be null if the user signed up using OAuth
     provider String? // eg'google', 'github'
@@ -32,9 +32,111 @@ model User {
     resetPasswordToken String?
     resetPasswordTokenExpires DateTime?
     needsUsernameUpdate Boolean @default(false) // for the first time, giving a temp username in oauth
+
+    // Relations
+    ownedAPIs              Api[]           @relation("OwnedAPIs")
+    bookmarkedAPIs         Bookmark[]      // many-to-many via Bookmark
+    ratings                Rating[]        // ratings given by user
+    subscriptions          Subscription[]  // future
+    apiKey                 ApiKey[] // each user will have a api key after subscription
+
     lastLogin DateTime?
     createdAt DateTime @default(now())
     updatedAt DateTime @updatedAt
 
     @@unique([providerId, provider])
+}
+
+
+model Api {
+    id                String      @id @default(cuid())
+    name              String
+    description       String?
+    logo              String?     @default("https://raw.githubusercontent.com/DurgeshChouksey/ApiVersePublicUtilities/main/public/temp-api-logo.png")
+    baseUrl           String
+    category          String
+    visibility        String      @default("public")
+    errorCount        Int         @default(0)
+    totalViews        Int         @default(0)
+    totalCalls        Int         @default(0)
+    averageRating     Float?
+
+    // Relations
+    owner             User        @relation("OwnedAPIs", fields: [ownerId], references: [id])
+    ownerId           String
+    endpoints         Endpoint[]
+    bookmarks         Bookmark[]
+    ratings           Rating[]
+    subscriptions     Subscription[] // future
+    apiKey            ApiKey[]
+
+    createdAt         DateTime    @default(now())
+    updatedAt         DateTime    @updatedAt
+}
+
+model Endpoint {
+    id            String   @id @default(cuid())
+    path          String
+    method        String
+    description   String?
+    parameters    Json?
+    headers       Json?
+    authRequired  Boolean  @default(false)
+    api           Api      @relation(fields: [apiId], references: [id])
+    apiId         String
+
+    createdAt     DateTime @default(now())
+    updatedAt     DateTime @updatedAt
+}
+
+model Bookmark {
+    id        String @id @default(cuid())
+    user      User   @relation(fields: [userId], references: [id])
+    userId    String
+    api       Api    @relation(fields: [apiId], references: [id])
+    apiId     String
+    createdAt DateTime @default(now())
+
+    @@unique([userId, apiId])
+}
+
+model Rating {
+    id        String  @id @default(cuid())
+    value     Int     // 1-5
+    comment   String?
+    user      User    @relation(fields: [userId], references: [id])
+    userId    String
+    api       Api     @relation(fields: [apiId], references: [id])
+    apiId     String
+
+    createdAt DateTime @default(now())
+}
+
+model Subscription {
+    id        String @id @default(cuid())
+    user      User   @relation(fields: [userId], references: [id])
+    userId    String
+    api       Api    @relation(fields: [apiId], references: [id])
+    apiId     String
+    plan      String
+    active    Boolean @default(true)
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
+
+    @@unique([userId, apiId])
+}
+
+
+model ApiKey {
+    id        String   @id @default(cuid())
+    key       String   @unique      // the actual API key
+    api       Api      @relation(fields: [apiId], references: [id])
+    apiId     String
+    user      User?    @relation(fields: [userId], references: [id]) // optional: if keys are user-specific
+    userId    String?
+    active    Boolean  @default(true)
+    createdAt DateTime @default(now())
+    lastUsed  DateTime?
+
+    @@unique([apiId, key])
 }

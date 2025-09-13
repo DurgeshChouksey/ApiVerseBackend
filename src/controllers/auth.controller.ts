@@ -6,7 +6,7 @@ import { getPrisma } from "../prisma.setup/client";
 import { BadRequestError } from "../utils/errors";
 import { generateTokenAndSetCookies } from "../utils/generateTokenAndSetCookies";
 import { deleteCookie, getCookie, setCookie } from "hono/cookie";
-import { jwtVerify } from "jose";
+import { jwtVerify, SignJWT } from "jose";
 import { generateRandomToken } from "../utils/generateRandomToken";
 
 //@DESC signup route controller
@@ -309,7 +309,8 @@ export const login = async (c:Context) => {
 //@public
 
 export const logout = async (c:Context) => {
-    deleteCookie(c, 'token');
+    deleteCookie(c, 'accessToken');
+    deleteCookie(c, 'refreshToken');
     c.status(200);
     return c.json({message: "Logged out successfully"});
 }
@@ -330,6 +331,7 @@ export const checkAuth = async (c:Context) => {
             id: true,
             username: true,
             email: true,
+            profileImage: true,
             isVerified: true,
         }
     });
@@ -416,7 +418,11 @@ export const resetPassword = async(c: Context) => {
     }
 
     // Compare with old password
-    const isSameAsOld = await bcrypt.compare(password, user.password!);
+    let isSameAsOld = false;
+    if(user.password) {
+        isSameAsOld = await bcrypt.compare(password, user.password!);
+    }
+
     if (isSameAsOld) {
         throw new BadRequestError("New password cannot be the same as the old password");
     }
@@ -489,4 +495,40 @@ export const forgotPassword = async(c: Context) => {
 
     c.status(200);
     return c.json({message: "Reset password link is sent to the verified email"})
+}
+
+
+//@DESC to generate accesstoken using refresh-token
+//@route /api/v1/auth/refresh-token POST
+//@private
+
+export const refreshToken = async(c: Context) => {
+    const refreshToken = getCookie(c, "refreshToken");
+    if(!refreshToken) {
+        throw new BadRequestError("Refresh-Token missing, log in again")
+    }
+
+    const { payload } = await jwtVerify(refreshToken, new TextEncoder().encode(c.env.JWT_REFRESH_SECRET));
+
+    if(!payload) {
+        throw new BadRequestError("Invalid or expired refresh token");
+    }
+
+    const newAccessToken = await new SignJWT(payload)
+    .setProtectedHeader({ alg: 'HS256' })
+    .setExpirationTime('1h')
+    .sign(new TextEncoder().encode(c.env.JWT_SECRET));
+
+    setCookie(c, 'accessToken', newAccessToken, {
+        path: '/',
+        httpOnly: true,
+        secure: true,
+        sameSite: 'Lax', // optional, recommended
+        maxAge: 1*60*60, // 1 hour
+    });
+
+    return c.json({
+        message: "Access token refresh successfully",
+        accessToken: newAccessToken
+    })
 }
