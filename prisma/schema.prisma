@@ -79,9 +79,15 @@ model Endpoint {
     path          String
     method        String
     description   String?
-    parameters    Json?
-    headers       Json?
     authRequired  Boolean  @default(false)
+
+    // Parameters
+    queryParameters  Json?    // array of { name, type, required, enumValues?, example }
+    bodyParameters   Json?    // array of { name, type, required, enumValues?, example }
+    bodyContentType  String?  // e.g., application/json, application/x-www-form-urlencoded
+    headers          Json?    // array of { name, value?, required }
+
+
     api           Api      @relation(fields: [apiId], references: [id])
     apiId         String
 
