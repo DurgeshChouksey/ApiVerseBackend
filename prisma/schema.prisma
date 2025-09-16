@@ -39,6 +39,7 @@ model User {
     ratings                Rating[]        // ratings given by user
     subscriptions          Subscription[]  // future
     apiKey                 ApiKey[] // each user will have a api key after subscription
+    endpointLogs           EndpointLog[] // to store endoipnt logs
 
     lastLogin DateTime?
     createdAt DateTime @default(now())
@@ -50,16 +51,19 @@ model User {
 
 model Api {
     id                String      @id @default(cuid())
-    name              String
+    name              String?
     description       String?
     logo              String?     @default("https://raw.githubusercontent.com/DurgeshChouksey/ApiVersePublicUtilities/main/public/temp-api-logo.png")
     baseUrl           String
     category          String
     visibility        String      @default("public")
-    errorCount        Int         @default(0)
+    requiresApiKey    Boolean     @default(false)
     totalViews        Int         @default(0)
-    totalCalls        Int         @default(0)
     averageRating     Float?
+    providerAuthType   String?   // "apiKey", "oauth2", etc.
+    providerAuthLocation String? // "query" "header"
+    providerAuthField String?    // "apiId"(query), "X-API-KEY"(header)
+    providerAuthKey    String?   // encrypted key/token (never exposed to frontend)
 
     // Relations
     owner             User        @relation("OwnedAPIs", fields: [ownerId], references: [id])
@@ -69,6 +73,7 @@ model Api {
     ratings           Rating[]
     subscriptions     Subscription[] // future
     apiKey            ApiKey[]
+    apiLogs           ApiLog[]
 
     createdAt         DateTime    @default(now())
     updatedAt         DateTime    @updatedAt
@@ -76,6 +81,7 @@ model Api {
 
 model Endpoint {
     id            String   @id @default(cuid())
+    name          String?
     path          String
     method        String
     description   String?
@@ -83,13 +89,14 @@ model Endpoint {
 
     // Parameters
     queryParameters  Json?    // array of { name, type, required, enumValues?, example }
-    bodyParameters   Json?    // array of { name, type, required, enumValues?, example }
-    bodyContentType  String?  // e.g., application/json, application/x-www-form-urlencoded
+    bodyParameters   Json?    // array of bodyContentType === form-data ? { name, type, required, enumValues?, example } : {payload, payloadDesc, body, schema}
+    bodyContentType  String?  // e.g., application/json, application/x-www-form-urlencoded, form-data, plain-text
     headers          Json?    // array of { name, value?, required }
 
-
+    // relations
     api           Api      @relation(fields: [apiId], references: [id])
     apiId         String
+    endpointLogs           EndpointLog[] // to store endoipnt logs
 
     createdAt     DateTime @default(now())
     updatedAt     DateTime @updatedAt
@@ -144,5 +151,30 @@ model ApiKey {
     createdAt DateTime @default(now())
     lastUsed  DateTime?
 
-    @@unique([apiId, key])
+    @@unique([apiId, userId])
+}
+
+
+// LOGS
+
+model EndpointLog {
+    id          String   @id @default(cuid())
+    endpoint    Endpoint @relation(fields: [endpointId], references: [id])
+    endpointId  String
+    user        User?    @relation(fields: [userId], references: [id])
+    userId      String?  // optional if anonymous
+    success     Boolean
+    latency     Int      // in milliseconds
+    errorMessage String?
+    createdAt   DateTime @default(now())
+}
+
+model ApiLog {
+    id           String  @id @default(cuid())
+    api          Api     @relation(fields: [apiId], references: [id])
+    apiId        String
+    totalCalls   Int     @default(0)
+    totalErrors  Int     @default(0)
+    averageLatency Float?
+    createdAt    DateTime @default(now())
 }
