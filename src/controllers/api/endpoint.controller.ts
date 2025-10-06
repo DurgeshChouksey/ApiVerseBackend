@@ -246,6 +246,7 @@ export const deleteEndpoint = async (c:Context) => {
 // @private
 
 export const testEndpoint = async (c: Context) => {
+
     const prisma = getPrisma(c);
     const apiId = c.req.param("apiId");
     const endpointId = c.req.param("endpointId");

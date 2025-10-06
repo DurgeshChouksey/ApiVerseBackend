@@ -28,23 +28,23 @@ export const signup = async(c:Context) => {
     const body = await c.req.json();
     const { username, password } = SignupSchema.parse(body);
 
-    // Trim and normalize inputs
+    // Trim input
     const trimmedUsername = username.trim();
 
-    // hash password
     const hashedPassword : string = await bcrypt.hash(password, 10);
 
-    // these inputs should be passed while creating an user
     const signupInputs: signupInputValidator = {
         username: trimmedUsername,
         password: hashedPassword,
     }
 
+    // check for duplicate username
     const existingUser = await prisma.user.findUnique({ where: { username: trimmedUsername } });
     if (existingUser) {
         throw new BadRequestError('Username already taken');
     }
 
+    // creating user
     const user = await prisma.user.create({
         data: {
             ...signupInputs,
@@ -84,9 +84,10 @@ export const addEmail = async(c:Context) => {
     });
 
     const {email} = await c.req.json();
+    // converting to lowercase
     const normalizedEmail = emailSchema.parse(email).toLowerCase();
 
-    const userId = c.get("userId"); // example: set by auth middleware
+    const userId = c.get("userId");
 
     // check if email already exists for another user
     const existingEmailUser = await prisma.user.findUnique({
@@ -98,7 +99,7 @@ export const addEmail = async(c:Context) => {
     }
 
 
-    // generagte verificatoin tojen
+    // generagte verificatoin token
     const verificationToken = Math.floor(100000 + Math.random() * 900000).toString();
 
     const updateUser = await prisma.user.update({
@@ -228,7 +229,7 @@ export const resendVerificationEmail = async (c:Context) => {
 
 export const login = async (c:Context) => {
 
-    // Check if token cookie already exists
+    // check if user already logged in
     const token = getCookie(c, "token") // or use getCookie(c, "token")
 
     if (token) {

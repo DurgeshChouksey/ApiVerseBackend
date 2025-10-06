@@ -74,13 +74,16 @@ export const googleCallback = async (c: Context) => {
         const tokenRes = await fetch("https://oauth2.googleapis.com/token", {
             method: "POST",
             headers: { "Content-Type": "application/x-www-form-urlencoded" },
+            // whenever the content-type is x-www-xform-urlencoded
+            // we have to send queryParameters but in body
+            // using URLSearchParams -> key1=value1&key2=value2&key3=value3
             body: new URLSearchParams({
-            client_id: c.env.GOOGLE_CLIENT_ID,
-            client_secret: c.env.GOOGLE_CLIENT_SECRET,
-            code,
-            code_verifier: codeVerifier,
-            grant_type: "authorization_code",
-            redirect_uri: "http://localhost:8787/api/v1/auth/google/callback",
+                client_id: c.env.GOOGLE_CLIENT_ID,
+                client_secret: c.env.GOOGLE_CLIENT_SECRET,
+                code,
+                code_verifier: codeVerifier,
+                grant_type: "authorization_code",
+                redirect_uri: "http://localhost:8787/api/v1/auth/google/callback",
             }),
         });
 
@@ -151,7 +154,7 @@ export const googleCallback = async (c: Context) => {
         const token = await generateTokenAndSetCookies(c, { id: user.id, username: user.username, email: user.email });
 
         return c.json({ message: "OAuth login success", user: userInfo });
-    } catch (err) {
+    } catch (err: any) {
         return c.json({ message: "OAuth callback failed", error: err.message }, 500);
     }
 };
