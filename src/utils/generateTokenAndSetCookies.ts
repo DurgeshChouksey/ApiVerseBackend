@@ -29,7 +29,7 @@ export const generateTokenAndSetCookies = async ( c: Context, user: { id: string
         httpOnly: true,
         secure: true,
         sameSite: 'None', // optional, recommended
-        maxAge: 1*60*60, // 1 min
+        maxAge: 1*60*60, // 1 hour
     });
 
     setCookie(c, 'refreshToken', refreshToken, {

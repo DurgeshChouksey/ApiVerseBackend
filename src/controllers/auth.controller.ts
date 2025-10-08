@@ -524,7 +524,7 @@ export const refreshToken = async(c: Context) => {
         path: '/',
         httpOnly: true,
         secure: true,
-        sameSite: 'Lax', // optional, recommended
+        sameSite: 'None', // optional, recommended
         maxAge: 1*60*60, // 1 hour
     });
 
