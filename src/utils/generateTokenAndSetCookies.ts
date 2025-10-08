@@ -29,11 +29,11 @@ export const generateTokenAndSetCookies = async ( c: Context, user: { id: string
         httpOnly: true,
         secure: true,
         sameSite: 'None', // optional, recommended
-        maxAge: 1*60*60, // 1 hour
+        maxAge: 1*60*60, // 1 min
     });
 
     setCookie(c, 'refreshToken', refreshToken, {
-        path: '/api/v1/auth/refresh-token',
+        path: '/',
         httpOnly: true,
         secure: true,
         sameSite: 'None', // optional, recommended
