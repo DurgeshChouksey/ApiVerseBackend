@@ -28,7 +28,7 @@ export const generateTokenAndSetCookies = async ( c: Context, user: { id: string
         path: '/',
         httpOnly: true,
         secure: true,
-        sameSite: 'None', // optional, recommended
+        sameSite: 'None',
         maxAge: 1*60*60, // 1 hour
     });
 
@@ -36,7 +36,7 @@ export const generateTokenAndSetCookies = async ( c: Context, user: { id: string
         path: '/',
         httpOnly: true,
         secure: true,
-        sameSite: 'None', // optional, recommended
+        sameSite: 'None',
         maxAge: 7 * 24 * 60 * 60, // 7 hour
     });
 

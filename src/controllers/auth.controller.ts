@@ -310,8 +310,18 @@ export const login = async (c:Context) => {
 //@public
 
 export const logout = async (c:Context) => {
-    deleteCookie(c, 'accessToken');
-    deleteCookie(c, 'refreshToken');
+    deleteCookie(c, 'accessToken', {
+        path: '/',
+        httpOnly: true,
+        secure: true,
+        sameSite: 'None'
+    });
+    deleteCookie(c, 'refreshToken', {
+        path: '/',
+        httpOnly: true,
+        secure: true,
+        sameSite: 'None'
+    });
     c.status(200);
     return c.json({message: "Logged out successfully"});
 }
