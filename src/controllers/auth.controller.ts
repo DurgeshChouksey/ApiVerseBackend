@@ -94,6 +94,9 @@ export const addEmail = async(c:Context) => {
         where: { email: normalizedEmail }
     });
 
+    console.log(existingEmailUser);
+    console.log("helllooooo")
+
     if (existingEmailUser) {
         throw new BadRequestError("Email is already registered with another account");
     }
@@ -489,16 +492,15 @@ export const forgotPassword = async(c: Context) => {
     const resetPasswordToken = generateRandomToken(32);
     const resetPasswordTokenExpires = new Date(Date.now() + 10*60*1000); // 10min
 
-    await prisma.user.update({
+    const updatedUser = await prisma.user.update({
         where: isEmail ? {email: identifier.toLowerCase() } : {username: identifier.trim()},
         data: {
             resetPasswordToken,
             resetPasswordTokenExpires
         },
-        select: {
-            email: true,
-        }
     })
+
+    console.log(updatedUser)
 
     // send mail with reset passworld link
     const resetPasswordUrl = `http://localhost:5173/resetPassword?token=${resetPasswordToken}`;

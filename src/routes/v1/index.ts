@@ -16,7 +16,6 @@ v1Router.route('/user', userRouter);
 
 v1Router.route('/apis', apiRouter);
 
-v1Router.use('/logs/*', authHandler);
 v1Router.route('/logs', logsRouter);
 
 

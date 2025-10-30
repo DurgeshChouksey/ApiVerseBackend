@@ -13,7 +13,7 @@ import { BadRequestError } from "../utils/errors";
 export const redirectToGoogle = async (c: Context) => {
 
     const clientId = c.env.GOOGLE_CLIENT_ID;
-    const redirectUri = "http://localhost:8787/api/v1/auth/google/callback";
+    const redirectUri = "https://apiverse.durgesh65178.workers.dev/api/v1/auth/google/callback";
     const scope = "openid profile email";
     const responseType = "code";
     const state = crypto.randomUUID();
@@ -83,7 +83,7 @@ export const googleCallback = async (c: Context) => {
                 code,
                 code_verifier: codeVerifier,
                 grant_type: "authorization_code",
-                redirect_uri: "http://localhost:8787/api/v1/auth/google/callback",
+                redirect_uri: "https://apiverse.durgesh65178.workers.dev/api/v1/auth/google/callback",
             }),
         });
 
@@ -153,7 +153,7 @@ export const googleCallback = async (c: Context) => {
 
         const token = await generateTokenAndSetCookies(c, { id: user.id, username: user.username, email: user.email });
 
-        return c.json({ message: "OAuth login success", user: userInfo });
+        return c.redirect(`${c.env.FRONTEND_BASE_URL}/public`)
     } catch (err: any) {
         return c.json({ message: "OAuth callback failed", error: err.message }, 500);
     }

@@ -6,7 +6,10 @@
   // "compatibility_flags": [
   //   "nodejs_compat"
   // ],
-  "vars": {},
+  "vars": {
+    "SENDGRID_API_KEY": "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",
+    "EMAIL_FROM":"noreply.authservice.bot@gmail.com"
+  },
   // "kv_namespaces": [
   //   {
   //     "binding": "MY_KV_NAMESPACE",

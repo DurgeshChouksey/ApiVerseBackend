@@ -5,6 +5,7 @@ import * as subscriptionController from "../../controllers/api/subscription.cont
 import * as apiKeyController from "../../controllers/api/apikey.controller";
 import * as bookmarkController from "../../controllers/api/bookmark.controller";
 import * as ratingController from "../../controllers/api/rating.controller";
+import * as analyticsController from "../../controllers/api/analytics.controller";
 import { authHandler } from "../../middlewares/auth.middleware";
 const apiRouter = new Hono();
 
@@ -13,12 +14,14 @@ apiRouter.get("/bookmarks", authHandler, bookmarkController.getBookmarks);
 
 // API CURD
 apiRouter.post("/", authHandler, apiController.createAPI);
-apiRouter.get("/", apiController.getPublicAPI);
+apiRouter.get("/", authHandler, apiController.getPublicAPI);
 apiRouter.get("/subscribed", authHandler, apiController.getSubscribedAPI);
 apiRouter.get("/my", authHandler, apiController.getMyAPI);
 apiRouter.get("/:apiId", apiController.getAPIById);
 apiRouter.patch("/:apiId", authHandler, apiController.updateAPI);
 apiRouter.delete("/:apiId", authHandler, apiController.deleteAPI);
+apiRouter.post("/:apiId/docs", authHandler, apiController.createDocs); // private route
+apiRouter.get("/:apiId/docs", authHandler, apiController.getDocs);    // public or private as you like
 
 
 // ENDPOINT ROUTES
@@ -49,6 +52,10 @@ apiRouter.post("/:apiId/rate", authHandler, ratingController.addRating);
 apiRouter.patch("/:apiId/rate/:ratingId", authHandler, ratingController.updateRating);
 apiRouter.delete("/:apiId/rate/:ratingId", authHandler, ratingController.deleteRating);
 apiRouter.get("/:apiId/ratings", authHandler, ratingController.getRatings);
+
+// ANALYTICS ROUTES
+apiRouter.get("/:apiId/analytics/traffic", authHandler, analyticsController.trafficAnalytics);
+apiRouter.get("/:apiId/analytics/users", authHandler, analyticsController.userAnalytics);
 
 
 export default apiRouter;

@@ -5,7 +5,7 @@ import { getPrisma } from "../prisma.setup/client";
 import { BadRequestError, InternalServerError } from "../utils/errors";
 
 // @DESC to update user profile
-// @route /api/v1/user/update PATCH
+// @route /api/v1/user/update-profile PATCH
 // @private
 
 // firstname, lastname, bio, profileImage,
@@ -94,14 +94,6 @@ export const getUser = async (c: Context) => {
 
     const user = await prisma.user.findUnique({
         where: {id: userId},
-        select: {
-            id: true,
-            username: true,
-            firstName: true,
-            lastName: true,
-            bio: true,
-            profileImage: true
-        }
     })
 
     return c.json(user);
