@@ -12,7 +12,7 @@ export const sendVerificationEmail = async (c: Context, to: string, verification
     }
 
     // Replace with your actual template ID from SendGrid
-    const TEMPLATE_ID = "d-72665913bdbc41b6b8d3a84e61584919";
+    const TEMPLATE_ID = "d-5feec748d18e4665ab5a5c90ec5f2129";
 
     // here we are using SENDGRIDS REST API directly without SENDGRIDS SDK
     const payload = {
@@ -49,9 +49,9 @@ export const sendVerificationEmail = async (c: Context, to: string, verification
         }
 
         console.log("Email sent successfully!");
-    } catch (error) {
+    } catch (error: any) {
         console.log(`Error sending signup email: ${error}`);
-        throw new BadRequestError('Error sending Signup Email');
+        throw new BadRequestError(error.errors[0].message);
     }
 }
 
@@ -66,7 +66,7 @@ export const sendWelcomeEmail = async (c: Context, to: string, userName: string,
     }
 
     // Replace with your actual template ID from SendGrid
-    const TEMPLATE_ID = "d-07769edbc3db48bda0255a3a638410f0";
+    const TEMPLATE_ID = "d-0a0f9a9d3a814b77bf9bb0e2983dd83f";
 
     // here we are using SENDGRIDS REST API directly without SENDGRIDS SDK
     const payload = {
@@ -120,7 +120,7 @@ export const sendResetPasswordLinkEmail = async (c: Context, to: string, resetPa
     }
 
     // Replace with your actual template ID from SendGrid
-    const TEMPLATE_ID = "d-9a2eeb1ba8ee4e418d0442e2a5ef9416";
+    const TEMPLATE_ID = "d-4b6861df35e04700a9b73cd945990ed9";
 
     // here we are using SENDGRIDS REST API directly without SENDGRIDS SDK
     const payload = {
@@ -174,7 +174,7 @@ export const sendResetPasswordSuccessEmail = async (c: Context, to: string, user
     }
 
     // Replace with your actual template ID from SendGrid
-    const TEMPLATE_ID = "d-85aba470d9ea4008bc2a45f98457cf43";
+    const TEMPLATE_ID = "d-49c0f1db93e3425b9bbf078ed27e1621";
 
     // here we are using SENDGRIDS REST API directly without SENDGRIDS SDK
     const payload = {

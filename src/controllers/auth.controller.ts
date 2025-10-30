@@ -170,7 +170,7 @@ export const verifyEmail = async (c:Context) => {
     })
 
     // ! -> email is not null, because we have called add-email first
-    await sendWelcomeEmail(c, updatedUser.email!, updatedUser.username, 'http://localhost:5673/dashboard');
+    await sendWelcomeEmail(c, updatedUser.email!, updatedUser.username, c.env.FRONTEND_BASE_URL);
 
     return c.json({
         message: "Email verified successfully",

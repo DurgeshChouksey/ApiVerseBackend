@@ -7,8 +7,8 @@
   //   "nodejs_compat"
   // ],
   "vars": {
-    "SENDGRID_API_KEY": "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",
-    "EMAIL_FROM":"noreply.authservice.bot@gmail.com"
+    "EMAIL_FROM":"noreply.authservice.bot@gmail.com",
+    "FRONTEND_BASE_URL" :"https://api-verse-frontend.vercel.app/"
   },
   // "kv_namespaces": [
   //   {

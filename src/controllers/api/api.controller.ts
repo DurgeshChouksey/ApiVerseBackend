@@ -62,7 +62,7 @@ export const createAPI = async (c: Context) => {
 	}
 
 	// generate key for owner if it is required
-if (body.requiresApiKey) {
+	if (body.requiresApiKey) {
 		const array = new Uint8Array(32);
 		crypto.getRandomValues(array);
 		const key = Array.from(array)
@@ -92,6 +92,7 @@ export const getPublicAPI = async (c: Context) => {
 	const sort = c.req.query("sort");
 	const page = parseInt(c.req.query("page") || "1", 10);
 	const limit = parseInt(c.req.query("limit") || "12", 10);
+	console.log(c.req.query('limit'))
 	const skip = (page - 1) * limit;
 
 	const where: any = { visibility: "public" };
@@ -518,97 +519,99 @@ export const updateAPI = async (c: Context) => {
 export const deleteAPI = async (c: Context) => {
 	const prisma = getPrisma(c);
 	const apiId = c.req.param("apiId");
-
-	if (!apiId) {
-		throw new BadRequestError("Missing apiId");
-	}
-
 	const userId = c.get("userId");
 
+	if (!apiId) throw new BadRequestError("Missing apiId");
+
 	const isUserAuthorized = await prisma.api.findUnique({
-		where: {
-			ownerId: userId,
-			id: apiId,
-		},
+		where: { id: apiId, ownerId: userId },
 	});
 
 	if (!isUserAuthorized) {
-		throw new UnauthorizedError("You are not authorized to delete API");
+		throw new UnauthorizedError("You are not authorized to delete this API");
 	}
 
-	const deletedAPI = await prisma.api.delete({
-		where: { id: apiId },
-	});
+	// 🧹 Delete all related data first
+	await prisma.$transaction([
+		prisma.bookmark.deleteMany({ where: { apiId } }),
+		prisma.subscription.deleteMany({ where: { apiId } }),
+		prisma.endpoint.deleteMany({ where: { apiId } }),
+		prisma.apiDocs.deleteMany({ where: { apiId } }),
+		prisma.apiKey.deleteMany({ where: { apiId } }),
+		prisma.apiLog.deleteMany({ where: { apiId } }),
+	]);
+
+	// Now safely delete the API
+	const deletedAPI = await prisma.api.delete({ where: { id: apiId } });
 
 	return c.json({
-		message: "API deleted successfully",
+		message: "API and all related data deleted successfully",
 		deletedAPI,
 	});
 };
-
 
 // @DESC create or update API docs
 // @route POST /api/v1/apis/:apiId/docs
 // @private
 export const createDocs = async (c: Context) => {
-  const prisma = getPrisma(c);
-  const apiId = c.req.param("apiId");
-  const userId = c.get("userId"); // only owner can update
+	const prisma = getPrisma(c);
+	const apiId = c.req.param("apiId");
+	const userId = c.get("userId"); // only owner can update
 
-  if (!apiId) throw new BadRequestError("Missing API ID");
+	if (!apiId) throw new BadRequestError("Missing API ID");
 
-  const body = await c.req.json();
-  const { content } = body;
+	const body = await c.req.json();
+	const { content } = body;
 
-  if (content === undefined) throw new BadRequestError("Missing content");
+	if (content === undefined) throw new BadRequestError("Missing content");
 
-  // Verify user owns the API
-  const api = await prisma.api.findUnique({
-    where: { id: apiId },
-    select: { ownerId: true },
-  });
+	// Verify user owns the API
+	const api = await prisma.api.findUnique({
+		where: { id: apiId },
+		select: { ownerId: true },
+	});
 
-  if (!api) throw new BadRequestError("API not found");
-  if (api.ownerId !== userId) throw new UnauthorizedError("Not authorized");
+	if (!api) throw new BadRequestError("API not found");
+	if (api.ownerId !== userId) throw new UnauthorizedError("Not authorized");
 
-  // Check if docs already exist
-  const existingDocs = await prisma.apiDocs.findFirst({
-    where: { apiId },
-  });
+	// Check if docs already exist
+	const existingDocs = await prisma.apiDocs.findFirst({
+		where: { apiId },
+	});
 
-  let docs;
-  if (existingDocs) {
-    // Update existing
-    docs = await prisma.apiDocs.update({
-      where: { id: existingDocs.id },
-      data: { content },
-    });
-  } else {
-    // Create new
-    docs = await prisma.apiDocs.create({
-      data: { apiId, content },
-    });
-  }
+	let docs;
+	if (existingDocs) {
+		// Update existing
+		docs = await prisma.apiDocs.update({
+			where: { id: existingDocs.id },
+			data: { content },
+		});
+	} else {
+		// Create new
+		docs = await prisma.apiDocs.create({
+			data: { apiId, content },
+		});
+	}
 
-  return c.json({ message: "Docs saved successfully", docs });
+	return c.json({ message: "Docs saved successfully", docs });
 };
 
 // @DESC get API docs by API ID
 // @route GET /api/v1/apis/:apiId/docs
 // @public
 export const getDocs = async (c: Context) => {
-  const prisma = getPrisma(c);
-  const apiId = c.req.param("apiId");
+	const prisma = getPrisma(c);
+	const apiId = c.req.param("apiId");
 
-  if (!apiId) throw new BadRequestError("Missing API ID");
+	if (!apiId) throw new BadRequestError("Missing API ID");
 
-  const docs = await prisma.apiDocs.findFirst({
-    where: { apiId },
-  });
+	const docs = await prisma.apiDocs.findFirst({
+		where: { apiId },
+	});
 
-  if (!docs) {
-    return c.json({ content: "" }); // return empty string if no docs
-  }
+	if (!docs) {
+		return c.json({ content: "" }); // return empty string if no docs
+	}
 
-  return c.json({ content: docs.content });
+	return c.json({ content: docs.content });
 };

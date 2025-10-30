@@ -210,43 +210,48 @@ export const updateEndpoint = async (c: Context) => {
 // @private
 
 export const deleteEndpoint = async (c: Context) => {
-	const prisma = getPrisma(c);
-	const apiId = c.req.param("apiId");
-	const endpointId = c.req.param("endpointId");
+  const prisma = getPrisma(c);
+  const apiId = c.req.param("apiId");
+  const endpointId = c.req.param("endpointId");
 
-	if (!apiId || !endpointId) {
-		throw new BadRequestError("Missing either api or endpoint id");
-	}
+  if (!apiId || !endpointId) {
+    throw new BadRequestError("Missing either api or endpoint id");
+  }
 
-	const endpoint = await prisma.endpoint.findUnique({
-		where: {
-			apiId,
-			id: endpointId,
-		},
-		include: { api: true },
-	});
+  const endpoint = await prisma.endpoint.findUnique({
+    where: {
+      apiId,
+      id: endpointId,
+    },
+    include: { api: true },
+  });
 
-	if (!endpoint) {
-		throw new BadRequestError("Endpoint not found");
-	}
+  if (!endpoint) {
+    throw new BadRequestError("Endpoint not found");
+  }
 
-	// Check if the logged-in user is the owner
-	const loggedInUserId = c.get("userId");
-	if (endpoint.api.ownerId !== loggedInUserId) {
-		throw new ForbiddenError("You cannot modify this endpoint");
-	}
+  // Check if the logged-in user is the owner
+  const loggedInUserId = c.get("userId");
+  if (endpoint.api.ownerId !== loggedInUserId) {
+    throw new ForbiddenError("You cannot modify this endpoint");
+  }
 
-	await prisma.endpoint.delete({
-		where: {
-			apiId,
-			id: endpointId,
-		},
-	});
+  // 🔥 First delete all endpoint logs related to this endpoint
+  await prisma.endpointLog.deleteMany({
+    where: { endpointId },
+  });
 
-	return c.json({
-		message: "Deleted endpoint successfully!",
-		endpoint,
-	});
+  // ✅ Now safely delete the endpoint
+  await prisma.endpoint.delete({
+    where: {
+      id: endpointId,
+    },
+  });
+
+  return c.json({
+    message: "Deleted endpoint successfully!",
+    endpoint,
+  });
 };
 
 // @DESC Test an endpoint (GET, POST, PATCH, etc.)
